@@ -44,7 +44,7 @@ jobs:
           echo "  'username' => \${{ secrets.andiekobbie }}," >> /var/www/html/sites/default/settings.php
           echo "  'password' => \${{ secrets.Biotecno97 }}," >> /var/www/html/sites/default/settings.php
           echo "  'prefix' => ''," >> /var/www/html/sites/default/settings.php
-          echo "  'host' => \${{ secrets.drupalamp.mysql.database.azure.com }}," >> /var/www/html/sites/default/settings.php
+          echo "  'host' => \${{ secrets.drupalamp_mysql_database_azure_com }}," >> /var/www/html/sites/default/settings.php
           echo "  'port' => '3306'," >> /var/www/html/sites/default/settings.php
           echo "  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql'," >> /var/www/html/sites/default/settings.php
           echo "  'driver' => 'mysql'," >> /var/www/html/sites/default/settings.php
