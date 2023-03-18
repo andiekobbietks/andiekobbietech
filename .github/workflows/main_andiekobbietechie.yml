@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy PHP app to Azure Web App - andiekobbietechie
+name: Build and deploy Drupal 9 app to Azure Web App - andiekobbietechie
 
 on:
   push:
@@ -27,14 +24,36 @@ jobs:
         with:
           files: 'composer.json'
 
-      - name: Run composer install if composer.json exists
+      - name: Install composer dependencies
         if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --no-dev
+
+      - name: Copy Drupal files
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: cp -R . /var/www/html
+
+      - name: Create settings.php file
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: cp /var/www/html/sites/default/default.settings.php /var/www/html/sites/default/settings.php && chmod 777 /var/www/html/sites/default/settings.php
+
+      - name: Set database connection string
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: |
+          echo "\$databases['default']['default'] = array (" >> /var/www/html/sites/default/settings.php
+          echo "  'database' => \${{ secrets.andiekobbietechie }}," >> /var/www/html/sites/default/settings.php
+          echo "  'username' => \${{ secrets.andiekobbie }}," >> /var/www/html/sites/default/settings.php
+          echo "  'password' => \${{ secrets.Biotecno97 }}," >> /var/www/html/sites/default/settings.php
+          echo "  'prefix' => ''," >> /var/www/html/sites/default/settings.php
+          echo "  'host' => \${{ secrets.drupalamp.mysql.database.azure.com }}," >> /var/www/html/sites/default/settings.php
+          echo "  'port' => '3306'," >> /var/www/html/sites/default/settings.php
+          echo "  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql'," >> /var/www/html/sites/default/settings.php
+          echo "  'driver' => 'mysql'," >> /var/www/html/sites/default/settings.php
+          echo ");" >> /var/www/html/sites/default/settings.php
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: php-app
+          name: drupal-app
           path: .
 
   deploy:
@@ -48,7 +67,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: php-app
+          name: drupal-app
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
