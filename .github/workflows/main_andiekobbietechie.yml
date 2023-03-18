@@ -44,11 +44,17 @@ jobs:
           echo "  'username' => \${{ secrets.andiekobbie }}," >> /var/www/html/sites/default/settings.php
           echo "  'password' => \${{ secrets.Biotecno97 }}," >> /var/www/html/sites/default/settings.php
           echo "  'prefix' => ''," >> /var/www/html/sites/default/settings.php
-          echo "  'host' => \${{ secrets.drupalamp_mysql_database_azure_com }}," >> /var/www/html/sites/default/settings.php
+          echo "  'host' => \${{ secrets.drupalamp.mysql.database.azure.com }}," >> /var/www/html/sites/default/settings.php
           echo "  'port' => '3306'," >> /var/www/html/sites/default/settings.php
           echo "  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql'," >> /var/www/html/sites/default/settings.php
           echo "  'driver' => 'mysql'," >> /var/www/html/sites/default/settings.php
           echo ");" >> /var/www/html/sites/default/settings.php
+
+      - name: Run Drupal 9 install wizard
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: |
+          cd /var/www/html
+          vendor/bin/drush site-install --db-url=mysql://{{ secrets.andiekobbie }}:{{ secrets.Biotecno97 }}@{{ secrets.drupalamp.mysql.database.azure.com }}/drupalamp -y
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
@@ -77,3 +83,21 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D295D96B2AAB4654A7EFEE8702CDD97A }}
           package: .
+          
+      - name: Run Drupal 9 Install Wizard
+        uses: Azure/install-drupal@v1
+        with:
+          app-name: 'andiekobbietechie'
+          slot-name: 'Production'
+          drupal-version: '9.5.5'
+          database-provider: 'mysql'
+          database-type: 'mysql'
+          database-name: ${{ secrets.andiekobbietechie }}
+          database-user-name: ${{ secrets.andiekobbie }}
+          database-user-password: ${{ secrets.Biotecno97 }}
+          db-server: ${{ secrets.drupalamp.mysql.database.azure.com }}
+          db-port: '3306'
+          site-name: 'My Drupal 9 Site'
+          site-admin-name: 'andiekobbie'
+          site-admin-password: ${{ secrets.Biotecno97 }}
+          site-admin-email: 'andre.enne@yahoo.com'
