@@ -74,6 +74,6 @@ jobs:
         id: deploy-to-webapp
         with:
           app-name: 'andiekobbietechie'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_88CF46FE824F4A3F8C4F37A5FDAD0E03 }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_1b3b464d510f42eb91599e29b96c2196 }}
           package: .
